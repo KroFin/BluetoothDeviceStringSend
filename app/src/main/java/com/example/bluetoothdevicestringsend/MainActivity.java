@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,21 +19,38 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+
+    public byte message[] = new byte[1];
+    private SensorManager sensorManager;
+    private Sensor sensor;
+    public static boolean sensor_isOn = false;
+
+    private TextView sensor_info;
+
+    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    BluetoothDevice bluetoothDevice;
+    BluetoothSocket bluetoothSocket = null;
+    OutputStream outputStream = null ;
 
     private int ENABLE_BLUETOOTH = 2;
     private ImageButton imageButton;
@@ -100,6 +119,21 @@ public class MainActivity extends AppCompatActivity {
         list_device.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+                final BluetoothAdapter bluetoothAdapter = null;
+                String blueAddress = mData.get(position).getAddress();
+                Toast.makeText(getApplicationContext(),blueAddress,Toast.LENGTH_SHORT).show();
+
+                Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+                bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
+                try{
+                    bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+                    Log.d("true","开始连接");
+                    bluetoothSocket.connect();
+                    Log.d("true","完成连接");
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
                 dialogSendMessage(view);
             }
         });
@@ -131,19 +165,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void dialogSendMessage (View view){
+        final String message;
+        final EditText editText = new EditText(this);
+        final String item[] = {"动画1","动画2","动画3"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("123");
-        builder.setTitle("123");
+        builder.setTitle("Send Message");
+        builder.setView(editText);
+        builder.setSingleChoiceItems(item, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(),"您选择了"+item[which],Toast.LENGTH_SHORT).show();
+            }
+        });
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(MainActivity.this, "yes",Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(MainActivity.this, "no",Toast.LENGTH_SHORT).show();
             }
         });
         builder.show();
