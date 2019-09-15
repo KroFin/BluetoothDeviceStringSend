@@ -1,5 +1,7 @@
 package com.example.bluetoothdevicestringsend;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -19,11 +21,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -57,12 +61,13 @@ public class MainActivity extends AppCompatActivity {
     private PopupWindow mPopupWindow;
     private String TAG = "KroFin";
     private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothSocket mBluetoothSocket;
     private List<BluetoothDeviceWhichBonded> mData;
     private Context mContext;
+    private CheckBox checkBox = null;
     private MyAdapter mAdapter;
     private ListView list_device;
-    private TextView textView;
-    private String[] gender = new String[]{"Iot小车","文字传输系统","自定义模式"};
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                mAdapter.notifyDataSetChanged();
+                Snackbar.make(view, "Freshen successful", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -105,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
         list_device = (ListView) findViewById(R.id.lv_01);
         mData = new ArrayList<>();
 
-
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
@@ -116,30 +121,54 @@ public class MainActivity extends AppCompatActivity {
         }
         mAdapter.notifyDataSetChanged();
 
-        list_device.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        list_device.setOnItemClickListener (new AdapterView.OnItemClickListener() {
+            int currentNun = -1;
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-                final BluetoothAdapter bluetoothAdapter = null;
-                String blueAddress = mData.get(position).getAddress();
-                Toast.makeText(getApplicationContext(),blueAddress,Toast.LENGTH_SHORT).show();
-
-                Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-                bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
-                try{
-                    bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
-                    Log.d("true","开始连接");
-                    bluetoothSocket.connect();
-                    Log.d("true","完成连接");
-                }catch (IOException e){
-                    e.printStackTrace();
+            public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
+                for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
+                    bluetoothDeviceWhichBonded.setChecked(false);
                 }
+                if (currentNun == -1){
+                    mData.get(position).setChecked(true);
+                    currentNun = position;
+                }else if (currentNun != position){
+                    for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
+                        bluetoothDeviceWhichBonded.setChecked(false);
+                    }
+                    currentNun = -1;
+                }else if (currentNun != position){
+                    for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
+                        bluetoothDeviceWhichBonded.setChecked(false);
+                    }
+                    mData.get(position).setChecked(true);
+                    currentNun = position;
+                }
+
+                new Thread(){
+                    @Override
+                    public void run(){
+                        final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+                        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                        String blueAddress = mData.get(position).getAddress();
+                        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+                        bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
+                        try{
+                            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+                            Log.d("true","开始连接");
+                            bluetoothSocket.connect();
+                            Log.d("true","完成连接");
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
                 dialogSendMessage(view);
+                mAdapter.notifyDataSetChanged();
             }
         });
     }
 
-    class buttonListener implements View.OnClickListener{
+    class buttonListener implements View.OnClickListener {
         @Override
         public void onClick(View v){
             Toast.makeText(getApplicationContext(),"123",Toast.LENGTH_LONG).show();
@@ -161,29 +190,63 @@ public class MainActivity extends AppCompatActivity {
 
     public void bluetoothConnected(){
         BluetoothSocket bluetoothSocket;
-
     }
 
     public void dialogSendMessage (View view){
-        final String message;
         final EditText editText = new EditText(this);
-        final String item[] = {"动画1","动画2","动画3"};
+        final String message = String.valueOf(editText.getText());
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Send Message");
         builder.setView(editText);
-        builder.setSingleChoiceItems(item, 0, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(),"您选择了"+item[which],Toast.LENGTH_SHORT).show();
-            }
-        });
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(MainActivity.this, "yes",Toast.LENGTH_SHORT).show();
+                SendtoBlueTooth(message);
             }
         });
         builder.show();
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
+                    bluetoothDeviceWhichBonded.setChecked(true);
+                }
+            }
+        });
+    }
+
+    public void dialogShowPersonalMessage (){
+        final TextView t = new TextView(this);
+        t.setText(Html.fromHtml("KroFin.icu"));
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("About this App");
+        alertDialog.setMessage("Author: KroFin\n");
+        alertDialog.show();
+    }
+
+    public void waiting(){
+        final ProgressDialog progressDialog = ProgressDialog.show(this,"Wait a moment","Connecting to the Device you choose",true,false);
+        new Thread(){
+          @Override
+          public void run(){
+              try {
+                  Thread.sleep(5000);
+                  progressDialog.cancel();
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
+          }
+        }.start();
+    }
+
+    public void SendtoBlueTooth(String message){
+        try{
+            outputStream = bluetoothSocket.getOutputStream();
+            outputStream.write(message.getBytes());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -201,16 +264,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            dialogShowPersonalMessage();
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

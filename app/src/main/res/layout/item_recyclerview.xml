@@ -4,22 +4,36 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:padding="15dp"
-        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingLeft="15dp"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
-        <TextView
-            android:id="@+id/DeviceName"
-            android:text="SteveMiller"
-            android:textSize="20dp"
+        android:layout_height="70dp">
+        <CheckBox
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="35dp" />
-        <TextView
-            android:id="@+id/DeviceAddress"
-            android:text="SteveMiller"
-            android:textSize="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="35dp" />
+            android:layout_height="match_parent">
+            <TextView
+                android:textColor="#000"
+                android:id="@+id/DeviceName"
+                android:text="SteveMiller"
+                android:textSize="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="22dp" />
+            <TextView
+                android:id="@+id/DeviceAddress"
+                android:text="SteveMiller"
+                android:textSize="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
