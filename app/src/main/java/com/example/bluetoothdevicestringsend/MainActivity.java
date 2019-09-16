@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-                    bluetoothDeviceWhichBonded.setChecked(true);
+                    bluetoothDeviceWhichBonded.setChecked(false);
                 }
             }
         });
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                
+
             }
         });
     }
