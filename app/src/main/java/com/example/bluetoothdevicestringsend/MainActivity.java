@@ -201,8 +201,8 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(MainActivity.this, "yes",Toast.LENGTH_SHORT).show();
                 SendtoBlueTooth(message);
+                Toast.makeText(MainActivity.this, "消息发送成功",Toast.LENGTH_SHORT).show();
             }
         });
         builder.show();
