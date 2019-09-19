@@ -214,20 +214,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        builder.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-                    bluetoothDeviceWhichBonded.setChecked(true);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
     public void dialogShowPersonalMessage (){
