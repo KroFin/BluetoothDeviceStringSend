@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothSocket mBluetoothSocket;
     private List<BluetoothDeviceWhichBonded> mData;
     private Context mContext;
-    private CheckBox checkBox = null;
+    private CheckBox checkBox;
     private MyAdapter mAdapter;
     private ListView list_device;
     private Dialog dialog;
@@ -122,28 +122,13 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
 
         list_device.setOnItemClickListener (new AdapterView.OnItemClickListener() {
-            int currentNun = -1;
+            BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded;
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
                 for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
                     bluetoothDeviceWhichBonded.setChecked(false);
                 }
-                if (currentNun == -1){
-                    mData.get(position).setChecked(true);
-                    currentNun = position;
-                }else if (currentNun != position){
-                    for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-                        bluetoothDeviceWhichBonded.setChecked(false);
-                    }
-                    currentNun = -1;
-                }else if (currentNun != position){
-                    for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-                        bluetoothDeviceWhichBonded.setChecked(false);
-                    }
-                    mData.get(position).setChecked(true);
-                    currentNun = position;
-                }
-
+                bluetoothDeviceWhichBonded.setChecked(true);
                 new Thread(){
                     @Override
                     public void run(){
