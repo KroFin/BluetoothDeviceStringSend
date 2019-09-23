@@ -122,13 +122,14 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
 
         list_device.setOnItemClickListener (new AdapterView.OnItemClickListener() {
-            BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded;
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
                 for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
                     bluetoothDeviceWhichBonded.setChecked(false);
                 }
-                bluetoothDeviceWhichBonded.setChecked(true);
+                checkBox = (CheckBox)findViewById(R.id.checkbox01);
+                checkBox.isChecked();
+
                 new Thread(){
                     @Override
                     public void run(){
