@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -45,13 +43,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
-
-    public byte message[] = new byte[1];
-    private SensorManager sensorManager;
-    private Sensor sensor;
-    public static boolean sensor_isOn = false;
-
-    private TextView sensor_info;
 
     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice bluetoothDevice;
@@ -126,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
         ListItemLinstener listItemLinstener = new ListItemLinstener();
         list_device.setOnItemClickListener(listItemLinstener);
-        
+
     }
     class ListItemLinstener implements OnItemClickListener{
         @Override
@@ -136,9 +127,6 @@ public class MainActivity extends AppCompatActivity {
             }
             checkBox = (CheckBox)findViewById(R.id.checkbox01);
             checkBox.isChecked();
-
-            WaitingThread waitingThread = new WaitingThread();
-            waitingThread.start();
 
             new Thread(){
                 @Override
@@ -154,6 +142,19 @@ public class MainActivity extends AppCompatActivity {
                         bluetoothSocket.connect();
                         Log.d("true","完成连接");
                     }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+
+            new Thread(){
+                @Override
+                public void run(){
+                    final ProgressDialog progressDialog = ProgressDialog.show(getApplicationContext(),"Wait a moment","Connecting to the Device you choose",true,false);
+                    try {
+                        Thread.sleep(5000);
+                        progressDialog.cancel();
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
                 }
