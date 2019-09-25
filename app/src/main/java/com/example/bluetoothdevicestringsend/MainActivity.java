@@ -21,12 +21,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private MyAdapter mAdapter;
     private ListView list_device;
     private Dialog dialog;
+    private Handler handler ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,43 +124,61 @@ public class MainActivity extends AppCompatActivity {
         }
         mAdapter.notifyDataSetChanged();
 
-        list_device.setOnItemClickListener (new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
-                for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-                    bluetoothDeviceWhichBonded.setChecked(false);
-                }
-                checkBox = (CheckBox)findViewById(R.id.checkbox01);
-                checkBox.isChecked();
-
-                new Thread(){
-                    @Override
-                    public void run(){
-                        final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-                        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                        String blueAddress = mData.get(position).getAddress();
-                        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-                        bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
-                        try{
-                            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
-                            Log.d("true","开始连接");
-                            bluetoothSocket.connect();
-                            Log.d("true","完成连接");
-                        }catch (IOException e){
-                            e.printStackTrace();
-                        }
-                    }
-                }.start();
-                dialogSendMessage(view);
-                mAdapter.notifyDataSetChanged();
+        ListItemLinstener listItemLinstener = new ListItemLinstener();
+        list_device.setOnItemClickListener(listItemLinstener);
+        
+    }
+    class ListItemLinstener implements OnItemClickListener{
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+            for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
+                bluetoothDeviceWhichBonded.setChecked(false);
             }
-        });
+            checkBox = (CheckBox)findViewById(R.id.checkbox01);
+            checkBox.isChecked();
+
+            WaitingThread waitingThread = new WaitingThread();
+            waitingThread.start();
+
+            new Thread(){
+                @Override
+                public void run(){
+                    final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+                    final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                    String blueAddress = mData.get(position).getAddress();
+                    Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+                    bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
+                    try{
+                        bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+                        Log.d("true","开始连接");
+                        bluetoothSocket.connect();
+                        Log.d("true","完成连接");
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
-    class buttonListener implements View.OnClickListener {
+    class WaitingThread extends Thread{
         @Override
-        public void onClick(View v){
-            Toast.makeText(getApplicationContext(),"123",Toast.LENGTH_LONG).show();
+        public void run(){
+            try {
+                ProgressDialog progressDialog = ProgressDialog.show(getApplicationContext(),"Wait a moment","Connecting to the Device you choose",true,false);
+                Thread.sleep(5000);
+                progressDialog.cancel();
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        dialogSendMessage();
+                    }
+                };
+                handler.post(runnable);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -178,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         BluetoothSocket bluetoothSocket;
     }
 
-    public void dialogSendMessage (View view){
+    public void dialogSendMessage (){
         final EditText editText = new EditText(this);
         final String message = String.valueOf(editText.getText());
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
