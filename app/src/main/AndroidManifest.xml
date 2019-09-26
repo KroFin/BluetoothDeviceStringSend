@@ -13,6 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".MessageSend"
+            android:label="@string/title_activity_message_send"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".MainActivity"
             android:label="Choose a device"
             android:theme="@style/AppTheme.NoActionBar">

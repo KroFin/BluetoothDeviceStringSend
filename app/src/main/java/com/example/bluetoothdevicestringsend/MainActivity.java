@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView list_device;
     private Dialog dialog;
     private Handler handler ;
+    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,11 +125,6 @@ public class MainActivity extends AppCompatActivity {
     class ListItemLinstener implements OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-            for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-                bluetoothDeviceWhichBonded.setChecked(false);
-            }
-            checkBox = (CheckBox)findViewById(R.id.checkbox01);
-            checkBox.isChecked();
 
             new Thread(){
                 @Override
@@ -139,6 +137,20 @@ public class MainActivity extends AppCompatActivity {
                     try{
                         bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
                         Log.d("true","开始连接");
+                        Looper.prepare();
+                        pd = new ProgressDialog(MainActivity.this);
+                        pd.setTitle("Wait a moment");
+                        pd.setMessage("Connecting to the Device you choose");
+                        pd.show();
+                        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                Intent intent = new Intent();
+                                intent.setClass(MainActivity.this,MessageSend.class);
+                                startActivity(intent);
+                            }
+                        });
+                        Looper.loop();
                         bluetoothSocket.connect();
                         Log.d("true","完成连接");
                     }catch (IOException e){
@@ -146,40 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }.start();
-
-            new Thread(){
-                @Override
-                public void run(){
-                    final ProgressDialog progressDialog = ProgressDialog.show(getApplicationContext(),"Wait a moment","Connecting to the Device you choose",true,false);
-                    try {
-                        Thread.sleep(5000);
-                        progressDialog.cancel();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
             mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    class WaitingThread extends Thread{
-        @Override
-        public void run(){
-            try {
-                ProgressDialog progressDialog = ProgressDialog.show(getApplicationContext(),"Wait a moment","Connecting to the Device you choose",true,false);
-                Thread.sleep(5000);
-                progressDialog.cancel();
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        dialogSendMessage();
-                    }
-                };
-                handler.post(runnable);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
         }
     }
 
@@ -200,29 +179,35 @@ public class MainActivity extends AppCompatActivity {
         BluetoothSocket bluetoothSocket;
     }
 
-    public void dialogSendMessage (){
-        final EditText editText = new EditText(this);
-        final String message = String.valueOf(editText.getText());
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Send Message");
-        builder.setView(editText);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                SendtoBlueTooth(message);
-                Toast.makeText(MainActivity.this, "消息发送成功",Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.show();
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-                    bluetoothDeviceWhichBonded.setChecked(false);
-                }
-            }
-        });
-    }
+//    public void dialogSendMessage (){
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Send Message");
+//        builder.setView(R.layout.alertdialog_item);
+//        builder.setCancelable(false);
+//        builder.setNeutralButton("Send", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                EditText et_send = (EditText)findViewById(R.id.et_send);
+//                try {
+//                    outputStream = bluetoothSocket.getOutputStream();
+//                    message = "S"+et_send.getText()+"E";
+//                    outputStream.write(message.getBytes());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//
+//        builder.show();
+//        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//            @Override
+//            public void onDismiss(DialogInterface dialog) {
+//                for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
+//                    bluetoothDeviceWhichBonded.setChecked(false);
+//                }
+//            }
+//        });
+//    }
 
     public void dialogShowPersonalMessage (){
         final TextView t = new TextView(this);
@@ -231,21 +216,6 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setTitle("About this App");
         alertDialog.setMessage("Author: KroFin\n");
         alertDialog.show();
-    }
-
-    public void waiting(){
-        final ProgressDialog progressDialog = ProgressDialog.show(this,"Wait a moment","Connecting to the Device you choose",true,false);
-        new Thread(){
-          @Override
-          public void run(){
-              try {
-                  Thread.sleep(5000);
-                  progressDialog.cancel();
-              } catch (InterruptedException e) {
-                  e.printStackTrace();
-              }
-          }
-        }.start();
     }
 
     public void SendtoBlueTooth(String message){
@@ -267,8 +237,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         try{
-            bluetoothSocket.close();
-        }catch (IOException e){
+//            bluetoothSocket.close();
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
