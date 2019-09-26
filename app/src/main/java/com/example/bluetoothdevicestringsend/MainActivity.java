@@ -126,38 +126,55 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-            new Thread(){
+            new Thread(new Runnable() {
                 @Override
-                public void run(){
-                    final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-                    final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                    String blueAddress = mData.get(position).getAddress();
-                    Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-                    bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
-                    try{
-                        bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
-                        Log.d("true","开始连接");
-                        Looper.prepare();
-                        pd = new ProgressDialog(MainActivity.this);
-                        pd.setTitle("Wait a moment");
-                        pd.setMessage("Connecting to the Device you choose");
-                        pd.show();
-                        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                Intent intent = new Intent();
-                                intent.setClass(MainActivity.this,MessageSend.class);
-                                startActivity(intent);
-                            }
-                        });
-                        Looper.loop();
-                        bluetoothSocket.connect();
-                        Log.d("true","完成连接");
-                    }catch (IOException e){
+                public void run() {
+                    pd = new ProgressDialog(MainActivity.this);
+                    pd.setTitle("Wait a moment");
+                    pd.setMessage("Connecting to the Device you choose");
+                    pd.show();
+                    try {
+                        Thread.sleep(3000);
+                        pd.cancel();
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
                 }
-            }.start();
+            }).start();
+
+            final String blueAddress = mData.get(position).getAddress();
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this,MessageSend.class);
+            intent.putExtra("blueAddress",blueAddress);
+            startActivity(intent);
+
+//            new Thread(){
+//                @Override
+//                public void run(){
+//                    final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+//                    final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//                    final String blueAddress = mData.get(position).getAddress();
+//                    Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+//                    bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
+//                    try{
+//                        bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+//                        Log.d("true","开始连接");
+//                        Looper.prepare();
+
+//                        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                            @Override
+//                            public void onCancel(DialogInterface dialog) {
+//
+//                            }
+//                        });
+//                        Looper.loop();
+//                        bluetoothSocket.connect();
+//                        Log.d("true","完成连接");
+//                    }catch (IOException e){
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }.start();
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -230,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(mReceiver);
+//        unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -253,7 +270,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_settings) {
             dialogShowPersonalMessage();
         }
