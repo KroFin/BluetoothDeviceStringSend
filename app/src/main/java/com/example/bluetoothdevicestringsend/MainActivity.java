@@ -126,21 +126,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    pd = new ProgressDialog(MainActivity.this);
-                    pd.setTitle("Wait a moment");
-                    pd.setMessage("Connecting to the Device you choose");
-                    pd.show();
-                    try {
-                        Thread.sleep(3000);
-                        pd.cancel();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
+            pd = new ProgressDialog(MainActivity.this);
+            pd.setTitle("Wait a moment");
+            pd.setMessage("Connecting to the Device you choose");
+            pd.show();
 
             final String blueAddress = mData.get(position).getAddress();
             Intent intent = new Intent();
