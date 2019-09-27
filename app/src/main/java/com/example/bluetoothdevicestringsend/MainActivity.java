@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mAdapter.notifyDataSetChanged();
-                Snackbar.make(view, "Freshen successful", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Freshen list successful", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

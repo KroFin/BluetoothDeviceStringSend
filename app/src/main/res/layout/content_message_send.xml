@@ -25,11 +25,4 @@
         android:id="@+id/et_send"
         android:layout_width="match_parent"
         android:layout_height="70dp" />
-    <Button
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:id="@+id/btn_send"
-        android:text="Send"
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
 </LinearLayout>
