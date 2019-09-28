@@ -23,11 +23,6 @@
         android:id="@+id/et_send"
         android:layout_width="match_parent"
         android:layout_height="70dp" />
-    <view
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="2px"
-        android:background="#000"/>
     <TextView
         android:textColor="#ea9c00"
         android:paddingTop="10dp"
@@ -40,46 +35,51 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="56dp">
+        android:orientation="vertical">
         <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="144dp"
-            android:layout_marginBottom="12dp">
-            <Button
-                android:id="@+id/Animation01"
-                android:layout_marginRight="12dp"
-                android:text="动作1"
-                android:textSize="20dp"
-                android:layout_width="144dp"
-                android:layout_height="144dp"
-                android:background="@drawable/shape"/>
-            <Button
-                android:id="@+id/Animation02"
-                android:text="动作2"
-                android:textSize="20dp"
-                android:layout_width="144dp"
-                android:layout_height="144dp"
-                android:background="@drawable/shape"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="300dp"
-            android:layout_height="144dp">
-            <Button
-                android:id="@+id/Animation03"
-                android:layout_marginRight="12dp"
-                android:text="动作3"
-                android:textSize="20dp"
-                android:layout_width="144dp"
-                android:layout_height="144dp"
-                android:background="@drawable/shape"/>
-            <Button
-                android:id="@+id/Animation04"
-                android:text="动作4"
-                android:textSize="20dp"
-                android:layout_width="144dp"
-                android:layout_height="144dp"
-                android:background="@drawable/shape"/>
+            android:layout_marginTop="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+            <LinearLayout
+                android:layout_width="252dp"
+                android:layout_height="150dp">
+                <Button
+                    android:id="@+id/Animation01"
+                    android:layout_marginRight="12dp"
+                    android:text="横向漂移"
+                    android:textSize="15dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/shape"/>
+                <Button
+                    android:id="@+id/Animation02"
+                    android:text="纵向漂移"
+                    android:textSize="15dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/shape"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="252dp"
+                android:layout_height="130dp">
+                <Button
+                    android:id="@+id/Animation03"
+                    android:layout_marginRight="12dp"
+                    android:text="向上翻转"
+                    android:textSize="15dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/shape"/>
+                <Button
+                    android:id="@+id/Animation04"
+                    android:text="向下翻转"
+                    android:textSize="15dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:background="@drawable/shape"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
