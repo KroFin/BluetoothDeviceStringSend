@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -20,17 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -52,18 +47,12 @@ public class MainActivity extends AppCompatActivity {
     OutputStream outputStream = null ;
 
     private int ENABLE_BLUETOOTH = 2;
-    private ImageButton imageButton;
-    private PopupWindow mPopupWindow;
     private String TAG = "KroFin";
     private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothSocket mBluetoothSocket;
     private List<BluetoothDeviceWhichBonded> mData;
     private Context mContext;
-    private CheckBox checkBox;
     private MyAdapter mAdapter;
     private ListView list_device;
-    private Dialog dialog;
-    private Handler handler ;
     private ProgressDialog pd;
 
     @Override
@@ -136,34 +125,6 @@ public class MainActivity extends AppCompatActivity {
             intent.setClass(MainActivity.this,MessageSend.class);
             intent.putExtra("blueAddress",blueAddress);
             startActivity(intent);
-
-//            new Thread(){
-//                @Override
-//                public void run(){
-//                    final UUID MY_UUID_SECURE=UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-//                    final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//                    final String blueAddress = mData.get(position).getAddress();
-//                    Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-//                    bluetoothDevice = bluetoothAdapter.getRemoteDevice(blueAddress);
-//                    try{
-//                        bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
-//                        Log.d("true","开始连接");
-//                        Looper.prepare();
-
-//                        pd.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//                            @Override
-//                            public void onCancel(DialogInterface dialog) {
-//
-//                            }
-//                        });
-//                        Looper.loop();
-//                        bluetoothSocket.connect();
-//                        Log.d("true","完成连接");
-//                    }catch (IOException e){
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }.start();
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -185,35 +146,6 @@ public class MainActivity extends AppCompatActivity {
         BluetoothSocket bluetoothSocket;
     }
 
-//    public void dialogSendMessage (){
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Send Message");
-//        builder.setView(R.layout.alertdialog_item);
-//        builder.setCancelable(false);
-//        builder.setNeutralButton("Send", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                EditText et_send = (EditText)findViewById(R.id.et_send);
-//                try {
-//                    outputStream = bluetoothSocket.getOutputStream();
-//                    message = "S"+et_send.getText()+"E";
-//                    outputStream.write(message.getBytes());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//        builder.show();
-//        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//            @Override
-//            public void onDismiss(DialogInterface dialog) {
-//                for (BluetoothDeviceWhichBonded bluetoothDeviceWhichBonded : mData){
-//                    bluetoothDeviceWhichBonded.setChecked(false);
-//                }
-//            }
-//        });
-//    }
 
     public void dialogShowPersonalMessage (){
         final TextView t = new TextView(this);
