@@ -80,6 +80,24 @@
                     android:layout_height="120dp"
                     android:background="@drawable/shape"/>
             </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+                <Button
+                    android:id="@+id/btn_last_page"
+                    android:layout_marginRight="12dp"
+                    android:text="上一面"
+                    android:textSize="15dp"
+                    android:layout_width="120dp"
+                    android:layout_height="60dp" />
+                <Button
+                    android:id="@+id/btn_next_page"
+                    android:text="下一面"
+                    android:textSize="15dp"
+                    android:layout_width="120dp"
+                    android:layout_height="60dp" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
